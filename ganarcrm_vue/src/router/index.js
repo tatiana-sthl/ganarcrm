@@ -1,8 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import store from '../store'
+
 import HomeView from '../views/HomeView.vue'
 
 import SignUp from '../views/SignUp.vue'
 import LogIn from '../views/LogIn.vue'
+import Dasboard from '../views/dashboard/Dashboard.vue'
+import MyAccount from '../views/dashboard/MyAccount.vue'
+
+
 
 
 const routes = [
@@ -22,6 +28,22 @@ const routes = [
     component: LogIn
   },
   {
+    path: '/dashboard',
+    name: 'Dashboard',
+    component: Dasboard,
+    meta: {
+      requireLogin: true
+    }
+  },
+  {
+    path: '/dashboard/my-account',
+    name: 'MyAccount',
+    component: MyAccount,
+    meta: {
+      requireLogin: true
+    }
+  },
+  {
     path: '/about',
     name: 'about',
     // route level code-splitting
@@ -34,6 +56,14 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes
+})
+
+router.beforeEach((to, from, next) => {
+  if(to.matched.some(record => record.meta.requireLogin) && !store.state.isAuthenticated) {
+    next ('/log-in')
+  } else {
+    next()
+  }
 })
 
 export default router
